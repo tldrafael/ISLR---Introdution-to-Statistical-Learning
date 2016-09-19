@@ -1,0 +1,335 @@
+---
+title: "ISLR - Chapter 2 - Exercises Applied"
+author: "Rafael S Toledo"
+date: "September 7, 2016"
+output: html_document
+---
+  
+</br>
+
+#### **8. This exercise relates to the College data set, which can be found in the file `College.csv`. It contains a number of variables for 777 different universities and colleges in the US. **
+
+**Obs: ** For this question, i did not use the csv file, the file was not found when i called it after loaded College dataset, so i had to skip some questions.
+
+**a) Use the `read.csv()` function to read the data into R. Call the loaded data `college`. Make sure that you have the directory set to the correct location for the data.**
+
+```{r}
+library(ISLR)
+
+data(College)
+college <- College
+attach(college)
+
+```
+
+**c) Now, you should see that the first data column is `Private`. Note that another column labeled `row.names` now appears before the `Private` column. However, this is not a data column but rather the name that `R` is giving to each row.  **
+    
+I. Use the `summary()` function to produce a numerical summary of the variables in the data set.  
+    
+```{r}
+summary(college)
+
+```   
+  
+II. Use the `pairs()` function to produce a scatterplot matrix of the first ten columns or variables of the data. Recall that you can reference the first ten columns of a matrix `A` using `A[, 1:10]`.  
+  
+```{r}
+pairs(college[, 1:10])
+
+```
+
+III. Use the `plot()` function to produce side-by-side boxplots of `Outstate` versus `Private`.
+```{r}
+plot(Private, Outstate, varwidth=T, col="red",
+     xlab="Private College", ylab="Out-of-State Tuition in USD",
+     main="Distribution Along the Colleges")
+
+```
+
+IV. Create a new qualitative variable, called `Elite`, by *binning* the `Top10perc` variable. We are going to divide universities into two groups based on whether or not the proportion of students coming from the top 10% of their high school classes exceeds 50%.
+```{r}
+Elite=rep("No", nrow(college))
+Elite[college$Top10perc>50]="Yes"
+Elite=as.factor(Elite)
+college=data.frame(college, Elite)
+```
+
+Use the `summary()` function to see how many elite universities there are. Now use the `plot()` function to produce side-by-side boxplots of `Outstate` versus `Elite`.
+```{r}
+summary(Elite)
+
+plot(Elite, Outstate, varwidth=T, col="red",
+     xlab="Elite College", ylab="Out-of-State Tuition in USD",
+     main="Distribution Along the Elite Colleges")
+```
+
+V. Use the `hist()` function to produce some histograms with differing numbers of bins for a few of the quantitative variables. You may find the command `par(mfrow=c(2,2))` useful: it will divide the print window into four regions so that four plots can be made simultaneously. Modifying the arguments to this function will divide the screen in other ways.
+```{r}
+par(mfrow=c(2,2))
+
+hist(Top10perc, breaks=10, col="red", main="Percentage of The Top10 H.S. Students")
+hist(Apps, breaks=10, col="orange", main="Number of New Applications Received")
+hist(Personal, breaks=10, col="green", main="Estimated Personal Spending")
+hist(PhD, breaks=10, col="blue", main="Percentage of Faculty with Ph.D.'s")
+
+```
+
+VI. Continue exploring the data, and provide a brief summary of what you discover.
+```{r}
+summary(PhD)
+```
+
+It is strange that there is a college with more than 100% of percentage, checking the college or colleges.
+```{r}
+row.names(college[PhD>100, ])
+``` 
+ 
+Also there's an isolated university who receive a very larger number of applications than others, approximately 50 thousands.
+```{r}
+summary(Apps)
+
+row.names(college[Apps>25000, ])
+```
+
+Detaching the College data set.
+```{r}
+detach(college)
+```
+
+####**9. This exercise involves the `Auto` data set studied in the lab. Make sure that the missing values have been removed from the data.**
+
+The function `NA.omit` removes all incomplete cases.
+
+```{r}
+data(Auto)
+auto <- na.omit(Auto)
+attach(auto)
+```
+
+**a) Which of the predictors are quantitative, and which are qualitative?**
+```{r}
+lapply(auto, class)
+
+```
+
+The column *name* is the only not numeric, therefore it is a qualitative. Also reading the data set information `?Auto`, it is seen that the *origin* column is qualitative, factors described as numbers. The other columns are all quantitatives.
+```{r}
+origin <- as.factor(origin)
+```
+
+**b) What is the range of each quantitative predictor? You can answer this `range()` function.**
+```{r}
+# columns qualitative
+cols.qlt = names(auto) %in% c("name", "origin")
+
+# apply range in all columns except the qualitative
+lapply(auto[, !cols.qlt], range)
+```
+
+**c) What is the mean and standard deviation of each quantitative predictor?**
+```{r}
+lapply(auto[, !cols.qlt], function(x){ c('mean'=mean(x), 'sd'=sd(x))})
+```
+
+**d) Now remove the 10th through 85th observations. What is the range, mean, and standard deviation of each predictor in the subset of the data that remains?**
+```{r}
+lapply(auto[-(10:85), !cols.qlt], function(x){ c('mean'=mean(x), 'sd'=sd(x))})
+```
+
+**e) Using the full data set, investigate the predictors graphically, using scatterplots or other tools of your choice. Create some plots highlighting the relationships among the predictors. Comment on your findings.**
+```{r}
+pairs(auto[, !cols.qlt])
+```
+
+Perceiving the graph, it is noticed many tends, some instances are `mpg x cylinders`, `horsepower x weight`, `mpg x weight` and `displacement x acceleration`. Visualize it closer.
+
+```{r}
+par(mfrow=c(2,2))
+
+plot(displacement, acceleration)
+plot(weight, horsepower)
+plot(cylinders, mpg)
+plot(weight, mpg)
+
+```
+
+There is a linear tendency in all four graphs: *mpg* tends to decrease as *cylinders* or *weight* increases, whereas *horsepower* increases as *weight* increases, and *acceleration* and *displacement* have a negative correlation.
+
+**f) Suppose that we wish to predict gas mileage (`mpg`) on the basis of the other variables. Do your plots suggest that any of the other variables might be useful in predicting `mpg`? Justify your answer.**
+```{r}
+others.variables = !(names(auto) %in% "mpg" | cols.qlt)
+par(mfrow=c(3,2))
+for(i in names(auto[, others.variables])){
+  plot(mpg, get(i), ylab=i)
+}
+
+```
+
+How seen in the graphs, all other variables seems to have some correlation with *mpg* in distinct levels.
+
+
+####**10. This exercise involves the `Boston` housing data set.**
+
+**a) To begin, load in the `Boston` data set. The `Boston` data set is part of the `MASS` *library* in `R`.**
+```{r}
+library(MASS)
+```  
+**Now the data set is contained in the object `Boston`.  **
+```{r, eval=F} 
+Boston
+```
+**Read about the data set:  **
+```{r, eval=F} 
+?Boston
+```  
+**How many rows are in this data set? How many columns? What do the rows and columns represent?**
+
+The command `dim` computes the rows and columns of the dataset.
+```{r}
+dim(Boston)
+```
+
+The rows represent observations of the U.S. Census Tracts in the Boston Area. The columns presents the measures of the Census Variables.
+
+**b) Make some pairwise scatterplot of the predictors (columns) in this data set. Describe your findings.**
+```{r}
+attach(Boston)
+
+pairs(Boston)
+
+```
+
+An interesting finding is that high level of `rad - index of accessibility to radial highways` contain the highest level of `cri - per capita crime rate by town`.
+
+Seemingly, `medv` has an inversely proportion to `lstat - lower status of the population`,`nox - nitrogen oxides concentration` and `indus - proportion of non-retail business acres per town`, and a direct proportion to `rm - average number of rooms per dwelling`.
+
+**c) Are any of the predictors associated with per capita crime rate? If so, explain the relationship.**
+
+Indexes of correlations between crime rates and other variables. Printing them in order of absolutes values.
+```{r}
+Boston.corr = cor(Boston)
+Boston.corr.crim = Boston.corr[-1,1]
+print(
+  Boston.corr.crim[order(abs(Boston.corr.crim), decreasing = T)]
+)
+```
+
+The four greatest correlation values have a positive relationship, plotting them:
+
+```{r}
+par(mfrow=c(2,2))
+# get the four most correlated variables
+aux = names(Boston.corr.crim[order(abs(Boston.corr.crim), decreasing = T)][1:4])
+for(i in aux){
+  plot(get(i), crim, xlab=i)
+}
+```
+
+**d) Do any of the suburbs of Boston appear to have particularly high crime rates? Tax rates? Pupil-teacher ratios? Comment on the range of each predictor.**
+
+> **Crime Rates**
+```{r}
+summary(crim)
+```
+
+Yes, the maximum value is much higher than the 3th quartile. Counting crime rates abouve 30.
+```{r}
+length(crim[crim>30])
+```
+
+> **Tax Rates**
+```{r}
+hist(tax)
+```
+
+There are particulary suburbs in a higher level, counting values above 500.
+```{r}
+length(tax[tax>500])
+```
+
+> **Pupil-Teacher Ratio**
+```{r}
+hist(ptratio)
+```
+
+It seems a bit equilibrate between values of [14, 22], specially [20,21]. Counting values bellow 14 - the smallest ratios.
+```{r}
+length(ptratio[ptratio<14])
+```
+
+**e) How many of the suburbs in this data set bound the Charles river?**
+```{r}
+table(chas)
+```
+
+The value *1* says that the suburb bounds the Charles Rivers, there are 35 suburbs that bound river.
+
+**f) What is the median pupil-teacher ration among the towns in this data set?**
+```{r}
+median(ptratio)
+```
+
+**g) Which suburb of Boston has lowest median value of owner-occupied homes? What are the values of the other predictors for that suburb, and how do those values compare to the overall ranges for those predictors? Comment on your findings.**
+
+The suburbs of which are lower than median:
+```{r}
+subs.lw = which(medv<median(medv))
+print(subs.lw)
+```
+
+Compare with the rest of the other predictors.
+```{r}
+Boston.corr.subs.lw = cor(Boston[subs.lw, ])
+corr.compare = data.frame('lower'=Boston.corr.subs.lw[, "medv"], 'all'=Boston.corr[, "medv"])
+corr.compare$diff = corr.compare$lower - corr.compare$all
+```
+
+Check how much vary the differences.
+```{r}
+hist(corr.compare$diff, xlab="Correlation Differences")
+```
+
+Now, in absolute values.
+```{r}
+hist(abs(corr.compare$diff), xlab="Correlation Differences")
+```
+
+The main correlation diffences were at the variables:
+```{r}
+main.diffs = head(corr.compare[order(abs(corr.compare$diff), decreasing = T), ], 5)
+
+print(main.diffs)
+print(rownames(main.diffs))
+```
+
+The abrupt difference by far was `rm - average number of rooms per dwelling`, so the number of rooms has much less influence in the cheapest houses than the more expensive ones, this phenomenon also seem happening in `ptratio`. The `dis` increased compared to all suburbs correlation, it seems that further from employment centres is better for cheaper house prices.
+
+**h) In this data set, how many of the suburbs average more than seven rooms per dwelling? More than eight rooms per dwelling? Comment on the suburbs that average more than eight rooms per dwelling.**
+
+```{r}
+hist(rm, main="Distribution of Rooms by Dwelling", xlab="Rooms")
+```
+
+> **More than 7 rooms per dwelling**
+```{r}
+length(rm[rm>7])
+```
+
+> **More than 8 rooms per dwelling**
+```{r}
+length(rm[rm>8])
+```
+
+Let's see the prices of these houses compared over all others suburb houses.
+```{r}
+frm =as.factor(as.character(lapply(rm, function(x) ifelse(x>8, "]8, +Inf[", ifelse(x>7,"]7,8]","[0,7]")))))
+plot(frm, medv, varwidth=T, xlab="Number of Rooms", 
+     ylab="Median Values by $1000s",
+     title="Median Value of Owner-Occupied Homes")
+```
+
+The graph shows that houses of more than 8 rooms tend to be much more expensive, but not always, and even an outlier exists of very lower price than houses with less rooms, as seen below.
+
+```{r}
+Boston[rm>8 & medv<30, ]
+```
