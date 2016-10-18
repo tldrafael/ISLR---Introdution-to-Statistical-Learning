@@ -1,0 +1,151 @@
+---
+output: html_document
+author: Rafael de Souza Toledo
+date: September 24, 2016
+title: Chapter 3 - Linear Regression
+mathjax: local
+---
+
+## Conceptual Exercises
+
+***
+**Q1. Describe the null hypotheses to which the p-values given in Table 3.4 correspond. Explain what conclusions you can draw based on these p-values. Your explanation should be phrased in terms of `sales`, `TV`, `radio`, and `newspaper`, rather than in terms of the coefficients of the linear models.**
+
+
+- This test measures the contribution of a variable while the remaining variables are included in the model. For the model $\hat{y} = \hat{\beta_0} + \hat{\beta_0}x_1 + \hat{\beta_2}x_2 + \hat{\beta_3}x_3$, if the test is carried out for $\hat{\beta_1}$, then the test will check the significance of including the variable $x_1$ in the model that contains $x_2$ and $x_3$ (i.e., the model $\hat{y} = \hat{\beta_0} + \hat{\beta_2}x_2 + \hat{\beta_3}x_3$). Hence, the test is also referred to as partial or marginal test. $^[¹^]$
+
+- The null hypotheses of these p-values correspond to test if the predictor individually (*TV*, *Radio* or *Newspaper*) contribute to the models in comparison with another model with only the other predictors. Therefore, if $H_0: \beta_j = 0$ for each case. 
+
+- The p-values shown on the table indicates that *TV* and *Radio* are related to the *Sales*, while the *Newspaper* shows no evidence that it is related to the *Sales* in the presence of the other two.  
+
+***
+**Q2. Carefully explain the differences between the KNN classifier and KNN regression methods.**
+
+They are quite similar. Given a value for $K$ and a prediction point $x_0$, KNN regression first identifies the $K$ training observarions that are closes to $x_0$, represented by $N_0$. It then estimates $f(x_0)$ using the average of all the training responses in $N_0$. In other words,$$\hat{f}(x_0)=\frac{1}{K}\sum\limits_{x_i \in N_0} y_i$$
+
+So the main difference is the fact that for the classifier approach, the algorithm assumes the outcome as the class of more presence, and on the regression approach the response is the average value of the nearest neighbors.
+
+***
+**Q3. Suppose we have a data set with five predictors, $X_1 = GPA$, $X_2 = IQ$, $X_3 = Gender$ (1 for Female and 0 for Male), $X_4$ = Interaction between GPA and IQ, and $X_5$ = Interaction between GPA and Gender. The response is starting salary after graduation (in thousands of dollars). Suppose we use least squares to fit the model, and get $\hat{\beta_0} = 50$, $\hat{\beta_1} = 20$, $\hat{\beta_2} = 0.07$, $\hat{\beta_3} = 35$, $\hat{\beta_4} = 0.01$, $\hat{\beta_5} = -10$**.
+
+**a) Which answer is correct, and why?**  
+
+**i. For a fixed value of IQ and GPA, males earn more on average than females.**
+
+Not possible to assure. In this case, the coefficients that represent females would be $$\hat{\beta_3}*1 + \hat{\beta_5}*1*GPA$$, that results to $$35-10*GPA$$. So, males only would earn more for any GPA more than `3.5`.
+
+**ii. For a fixed value of IQ and GPA, females earn more on average than males.**
+
+As explained above, The females would only earn more for females with GPA less than `3.5`.
+
+**iii. For a fixed value of IQ and GPA, males earn more on average than females provided that the GPA is high enough.**
+
+Correct, with the highest GPA, the males tend to earn higher starting salaries.
+
+**iv. For a fixed value of IQ and GPA, females earn more on average than males provided that the GPA is high enough.**
+
+False as showed in `iii`. 
+
+**b) Predict the salary of a female with IQ of 110 and a GPA of 4.0.**
+
+The starting sallary is estimated as: $$\hat{Y} = 20*GPA + 0.07*IQ + 35*Female-Gender + 0.01*GPA*IQ - 10*GPA*Female-Gender$$, So $$\hat{Y} = 20*4 + 0.07*110 + 35*1 + 0.01*4*110 - 10*4*1 = $$ 
+```{r, echo=F}
+20*4 + 0.07*110 + 35*1 + 0.01*4*110 - 10*4*1
+```
+
+**c) True or false: Since the coefficient for the GPA/IQ interaction term is very small, there is very little evidence of an interaction effect. Justify your answer.**
+
+False. If we notice the partial effect of the terms IQ and the interactive one, we see that the main effect of IQ is equal to `7` and the interactive term is `4.4`. The last value is approximately 60% of the IQ hierachical effect. So it can not be ignored.
+
+***
+**Q4. I collect a set of data ($n = 100$ observations) containing a single predictor and a quantitative response. I then fit a linear regression model to the data, as well as a separate cubic regression, i.e. $Y = \beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \epsilon$.**
+
+**a) Suppose that the true relationship between X and Y is linear, i.e. $Y = \beta_0 + \beta_1X + \epsilon$. Consider the training residual sum of squares (RSS) for the linear regression, and also  the training RRS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.**. 
+
+I'd expect to be lower, because even the true relationship be linear, when we increase the dimensional of the polynomial space, the model tends to overfit the training set. But this overfitting does not represent a better estimation of the $f(x)$, it is the model following the irreducible error $\epsilon$, the noise of the data set.
+
+**b) Answer (a) using test rather than trainning RSS.**
+
+I'd expect to be higher, because as said in *a*, the model shows a lower bias, but a higher variance.
+
+**c) Suppose that the true relationship between X and Y is not linear, but we don't know how far it is from linear. Consider the training RSS for the linear regression, and also the training RSS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.**
+
+It would be lower, because a higher flexibility model always presents less bias.
+
+**d) Answer (c) using test rather than training RSS.**
+
+it depends about how much variance the trained model has, because if it presented a good trade-off between bias and variance, the test RSS would be lower.
+
+***
+**Q5. Consider the fitted values that result from performing linear regression without an intercept. In this setting, the $i^{th}$ fitted value takes the from $$\hat{y}_i=x_i\hat{\beta},$$ where $$\hat{\beta} = (\sum\limits_{i=1}^{n}x_iy_i)/(\sum\limits_{{i'}=1}^{n}x_{i'}^2)$$. Show that we can write $$\hat{y}_i=\sum\limits_{{i'}=1}^{n}a_{i'}y_{i'}$$. What is $a_{í'}$?**  
+
+> *Note: We interpret this result by saying that the fitted values from linear regression are linear combinations of the response values.*
+
+We can see $\hat{y_i} = \frac{x_i}{\sum\limits_{{i'}=1}^{n}{x_{i'}}^2}\sum\limits_{i=1}^{n}x_iy_i$, the $\frac{x_i}{\sum\limits_{{i'}=1}^{n}{x_{i'}}^2}$ is a constant value for each $i^{th}$, so let's represent it as $c_{i'}$, put it on the equation $\hat{y_i} = c_{i'}\sum\limits_{i=1}^{n}x_iy_i = \sum\limits_{i=1}^{n}c_{i'}x_iy_i$, combining $c_{i'}$ with $x_i$, we get $a_{i'}$. We could determine $a_{i'}$ as weight ponderation over the $Y$ set to estimate the $y_{i'}$ element.   
+
+
+***
+**Q6. Using (3.4), argue that in the case of simple linear regression, the least squares line always passes through the point $(\bar{x},\bar{y})$.**
+
+Because the $\hat{\beta_0}$ chosen to minimize the Residual Sum of Squares (RSS) is based essentially on the average values of $X$ and $Y$.  
+$$\hat{\beta_0} = \bar{y} - \hat{\beta_1}\bar{x}$$, which assumes a formula like a straight line. 
+
+***
+**Q7. It is claimed in the text that in the case of simple linear regression of $Y$ onto $X$, the $R^2$ statistic (3.17) is equal to the square of the correlation between $X$ and $Y$ (3.18). Prove that this is the case. For simplicity, you may assume that $\bar{x}=\bar{y}=0$**
+
+If we take the simplicity, so we have these formulas: **(I)**  $\hat{\beta_0}=0$ and **(II)**    $\hat\beta_1=\frac{\sum\limits_{i=1}^{n}x_iy_i}{\sum\limits_{i=1}^{n}{x_i}^2}$
+
+The correlation is defined as: $$Cor(x,y) = \frac{\sum\limits_{i=1}^{n}x_iy_i}{\sqrt{\sum\limits_{i=1}^{n}{x_i}^2\sum\limits_{i=1}^{n}{y_i}^2}} = r$$
+
+So, let's start expanding the $R^2$ formula: **(III)**$$R^2 = \frac{TSS-RSS}{TSS}$$,  
+
+i take only the RSS part, $RSS = \sum\limits_{i=1}^{n}(y_i - \hat{y_i})^2$
+
+$$RSS = \sum\limits_{i=1}^{n}(y_i - \hat{\beta_1}x_i)^2$$
+
+expand the exponential term
+
+$$RSS = \sum\limits_{i=1}^{n}(y_i^2 - 2y_i\hat\beta_1x_i + \hat\beta_1^2x_i^2)$$
+
+$$RSS = \sum\limits_{i=1}^{n}y_i^2 - 2\hat\beta_1\sum\limits_{i=1}^{n}x_iy_i + \hat\beta_1^2\sum\limits_{i=1}^{n}x_i^2$$
+
+$$RSS = \sum\limits_{i=1}^{n}y_i^2 + \hat\beta_1\bigg(\hat\beta_1\sum\limits_{i=1}^{n}x_i^2 - 2\sum\limits_{i=1}^{n}x_iy_i\bigg)$$
+
+substitute the right $\hat\beta_1$ by **II**:
+
+$$RSS = \sum\limits_{i=1}^{n}y_i^2 + \hat\beta_1\Bigg[\Bigg(\frac{\sum\limits_{i=1}^{n}x_iy_i}{\sum\limits_{i=1}^{n}{x_i}^2}\Bigg)\sum\limits_{i=1}^{n}x_i^2 - 2\sum\limits_{i=1}^{n}x_iy_i\Bigg]$$
+
+simplify the left inner term:
+
+$$RSS = \sum\limits_{i=1}^{n}y_i^2 + \hat\beta_1\Bigg[\Big(\sum\limits_{i=1}^{n}x_iy_i\Big) - 2\sum\limits_{i=1}^{n}x_iy_i\Bigg]$$
+
+$$RSS = \sum\limits_{i=1}^{n}y_i^2 - \hat\beta_1\sum\limits_{i=1}^{n}x_iy_i$$
+
+substitute the left $\hat\beta_1$ by **II**:
+
+$$RSS = \sum\limits_{i=1}^{n}y_i^2 - \Bigg(\frac{\sum\limits_{i=1}^{n}x_iy_i}{\sum\limits_{i=1}^{n}{x_i}^2}\Bigg)
+\sum\limits_{i=1}^{n}x_iy_i$$
+
+
+$$RSS = \sum\limits_{i=1}^{n}y_i^2 - \frac{\Big(\sum\limits_{i=1}^{n}x_iy_i\Big)^2}{\sum\limits_{i=1}^{n}{x_i}^2}$$
+
+
+$$RSS = \frac{\sum\limits_{i=1}^{n}y_i^2\sum\limits_{i=1}^{n}{x_i}^2 - \Big(\sum\limits_{i=1}^{n}x_iy_i\Big)^2}{\sum\limits_{i=1}^{n}{x_i}^2}$$
+
+Now backing to formula **III**, we know that $TSS = \sum\limits_{i=1}^n{y_i}^2$, and we substitue the $RSS$ term above.
+
+$$R^2 = \frac{\sum\limits_{i=1}^n{y_i}^2 - \Bigg(\frac{\sum\limits_{i=1}^{n}y_i^2\sum\limits_{i=1}^{n}{x_i}^2 - \Big(\sum\limits_{i=1}^{n}x_iy_i\Big)^2}{\sum\limits_{i=1}^{n}{x_i}^2}\Bigg)}{\sum\limits_{i=1}^n{y_i}^2}$$
+
+$$R^2 = \frac{\sum\limits_{i=1}^n{y_i}^2\sum\limits_{i=1}^{n}{x_i}^2 - \sum\limits_{i=1}^{n}y_i^2\sum\limits_{i=1}^{n}{x_i}^2 + \Big(\sum\limits_{i=1}^{n}x_iy_i\Big)^2}{\sum\limits_{i=1}^n{y_i}^2\sum\limits_{i=1}^{n}{x_i}^2}$$
+
+elimate the opposite terms in the higher part of the fraction
+
+$$R^2 = \frac{\Big(\sum\limits_{i=1}^{n}x_iy_i\Big)^2}{\sum\limits_{i=1}^n{y_i}^2\sum\limits_{i=1}^{n}{x_i}^2}$$
+
+and now, $R^2 = Cor(x,y)^2$
+
+
+***
+**References:**
+
+$^1$ http://reliawiki.org/index.php/Multiple_Linear_Regression_Analysis
