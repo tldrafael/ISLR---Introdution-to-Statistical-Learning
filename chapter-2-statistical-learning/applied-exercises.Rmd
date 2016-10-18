@@ -1,8 +1,9 @@
 ---
-title: "ISLR - Chapter 2 - Exercises Applied"
+title: "ISLR - Chapter 2 - Applied Exercises"
 author: "Rafael S Toledo"
 date: "September 7, 2016"
 output: html_document
+mathjax: local
 ---
   
 </br>
