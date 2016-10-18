@@ -1,0 +1,17 @@
+## **Introduction to Statistical Learning with R**  
+  
+<br>   
+    
+#### **Chapter 2 - Statistical Learning**
+
+ * [Applied Exercises](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/chapter-2-statistical-learning/applied-exercises.html)
+ * [Conceptual Exercises](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/chapter-2-statistical-learning/conceptual-exercises.html)
+
+<br>   
+    
+#### **Chapter 3 - Linear Regression**
+
+ * [Applied Exercises](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/chapter-3-linear-regression/applied-exercises.html)
+ * [Conceptual Exercises](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/chapter-3-linear-regression/conceptual-exercises.html)
+
+<br>   
