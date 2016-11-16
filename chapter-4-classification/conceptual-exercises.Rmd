@@ -1,0 +1,217 @@
+---
+title: "Chapter 4 - Classification"
+author: "Rafael S Toledo"
+date: "November 3, 2016"
+output: html_document
+mathjax: local
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+```
+***
+## **Conceptual Exercises**
+***
+**Q1. Using a little bit of algebra, prove that (4.2) is equivalent to (4.3). In other words, the logistic function representation and logit representation for the logistic regression are equivalent.**
+
+equation *4.2* : $p(X) = \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1X}}$
+
+So, i substrat one minus both parts:
+
+$$1 - p(X) = 1 - \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1X}} = \frac{1}{1 + e^{\beta_0 + \beta_1X}} ,$$
+
+$$\frac{1}{1 - p(X)} = 1 + e^{\beta_0 + \beta_1X} ,$$
+
+Therefore:
+
+$$p(X)\frac{1}{1 - p(X)} = \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1X}}(1 + e^{\beta_0 + \beta_1X}) ,$$
+
+the equation *4.3*:
+
+$$\frac{p(X)}{1 - p(X)} = e^{\beta_0 + \beta_1X}$$ 
+
+***
+**Q2. It was stated in the text that classifying an observation to the class for which (4.12) is largest is equivalent to classifying an observation to the class for which (4.13) is largest. Prove that is the case, in other words, under the assumption that the observations in the $k$th class are drawn from a $N(\mu_k,\sigma^2)$ distribution, the Bayes' classifier assigns an observation to the class for which the discriminat function is maximized.**
+
+
+the function *4.12* :  $$p_k(x) = \frac{\pi_k\frac{1}{\sqrt{2\pi}\sigma}exp\big(-\frac{1}{2\sigma^2}(x-\mu_k)^2\big)}{\sum\limits_{l=1}^{K} \pi_l\frac{1}{\sqrt{2\pi}\sigma}exp\big(-\frac{1}{2\sigma^2}(x-\mu_l)^2\big)}$$
+
+The denominator is equal to all classes, so i ignore it,
+
+$$f'_x = \pi_k\frac{1}{\sqrt{2\pi}\sigma}exp\big(-\frac{1}{2\sigma^2}(x-\mu_k)^2\big)$$
+
+Taking a natural logarithm, it goes to: 
+
+$$f''_x = \ln{\pi_k} + \ln{\big(\frac{1}{\sqrt{2\pi}\sigma}\big)} + \ln{exp\big(-\frac{1}{2\sigma^2}(x-\mu_k)^2\big)}$$
+
+The middle term is going to be equal for all classes, i ignore it, hence:
+
+$$f'''_x = \ln{\pi_k} - \frac{1}{2\sigma^2}(x-\mu_k)^2$$
+
+Expanding the squared term:
+
+$$f'''_x = \ln{\pi_k} - \frac{1}{2\sigma^2}(x^2-2x\mu_k+\mu_k^2)$$
+
+$$f'''_x = \ln{\pi_k} - \frac{x^2}{2\sigma^2} + \frac{x\mu_k}{\sigma^2} - \frac{\mu_k^2}{2\sigma^2}$$
+
+I also ignore the $x^2$ term since it is contant to all classes,
+
+$$f''''_x = \ln{\pi_k} + \frac{x\mu_k}{\sigma^2} - \frac{\mu_k^2}{2\sigma^2}$$
+
+Rearranging the positions, i get function *4.13* :
+
+$$\delta_k(x) = x\frac{\mu_k}{\sigma^2} - \frac{\mu_k^2}{2\sigma^2} + \ln{\pi_k}$$
+
+Thus, if i ignore all values that can be equal among the classes, i get only the essential elements which leverage the maximum probability.
+
+***
+**Q3. This problem relates to the QDA model, in which the observations within each class are drawn from a normal distribution with a class-specific mean vector and a class specific covariance matrix. We consider the simple case where $p=1$; i.e. there is only one feature.**  
+**Suppose that we have $K$ classes, and if an observation belongs to the $k$th class then $X$ comes from a one-dimensional normal distribution, $X ~ N(\mu_k, \sigma_k^2)$. Recall that the density function for the one-dimensional normal distribution is given in (4.11). Prove that in this case, the Bayes' classifier is not linear. Argue that it is in fact quadratic.**
+
+*Hint: For this problem, you should follow the arguments laid out in Section 4.4.2, but without making the assumption that $\sigma_1^2=...=\sigma_K^2$.*
+
+If we back to *Q2* resolution, we can continue from $f''_x$, but this time, i don't remove any term, because they distintic for each class, the $\sigma_k$ isn't more generic. So:
+
+$$f''_x = \ln{\pi_k} + \ln{\big(\frac{1}{\sqrt{2\pi}\sigma_k}\big)} + \ln{exp\big(-\frac{1}{2\sigma_k^2}(x-\mu_k)^2\big)}$$
+
+$$f''_x = \ln{\big(\frac{\pi_k}{\sqrt{2\pi}\sigma_k}\big)} - \frac{1}{2\sigma_k^2}(x-\mu_k)^2$$
+
+$$f''_x = \ln{\big(\frac{\pi_k}{\sqrt{2\pi}\sigma_k}\big)} - \frac{(x^2-2x\mu_k+\mu_k^2)}{2\sigma_k^2}$$
+
+Now, the first term is a distinct constant for each class, and the second one is the quadratic function of $x$.
+
+
+***
+**Q4. When the number of features $p$ is large, there tends to be a deterioration in the performance of KNN and other local approaches that perform prediction using only observations that are near the test observation for which a prediction must be made. This phenomenon is known as curse of dimensionality, and it ties into the fact that non-parametric appraches often perform poorly when $p$ is large. We will now investigate this curse.**
+
+**(a) Suppose that we have a set of observations, each with measurements on $p=1$ feature, $X$. We assume that $X$ is uniformly (evenly) distributed on [0,1]. Associated with each observation is a response value. Suppose that we wish to predict a test observation's response using only observations that are within 10% of the range of $X$ closest to that test observation. For instance, in order to predict the response for a test observation with $X = 0.6$, we will use observations in the range $[0.55,0.65]$. On average, what fraction of the available observations will we use to make the prediction?**
+
+10%.
+
+**(b) Now suppose that we have a set of observations, each with measurements on $p=2$ features, $X_1$ and $X_2$. We assume that $(X_1,X_2)$ are uniformly distributed on $[0,1] \times [0,1]$. We wish to predict a test observation's response using only observations that are within 10% of the range of $X_1$ and within 10% of the range of $X_2$ closest to that test observation. For instance, in order to predict the response for a test observation with $X_1=0.6$ and $X_2=0.35$, we will use observations in the range $[0.55,0.65]$ for $X_1$ and in the range of $[0.3,0.4]$ for $X_2$. On average, what fraction of the available observations will we use to make the prediction?**
+
+$fraction = 0.1 \times 0.1 = 0.01 = 1\%$.
+
+**c) Now suppose that we have a set of observations on $p=100$ features. Again the observations are uniformly distributed on each feature, and again each feature ranges in value from 0 to 1. We wish to predict a test observation's response using observations within th 10% of each feature's range that is closest to that test observation. What fraction of the availabe observations will we use to make the prediction?**
+
+$fraction = {0.1}^{100} = \frac{1}{10^{100}} = \frac{1}{10^{98}}\%$.
+
+**(d) Using your answers to parts (a)-(c), argue that a drawback of KNN when $p$ is large is that there are very few training observations "near" any given test observation.**
+
+As seen in the previous answers, a fraction of available observations near of the test observation decreases exponentially by number of predictiors.
+
+**(e) Now suppose that we wish to make a prediction for a test observation by creating a $p$-dimensional hypercube centered around the test observation that contains, on average, 10% of the training observations. For $p=1,2,$ and $100$, what is the length of each side of the hypercube? Comment on your answer.**
+
+Considering all predictors distributed uniformlly into the same range space, the hypercube's volume will be 10% of the total volume of polinomial space. The cube side length will be hypercube volume divided by $p^2$, where p equals number of sides. So:  
+
+Using range of [0,10].
+
+$$length = \frac{0.1 \times 10^p}{p^2} = \frac{10^{p-1}}{p^2}$$
+
+For $p=1$, $\frac{10^{1-1}}{1^2} = \frac{1}{1} = 1$  
+For $p=2$, $\frac{10^{2-1}}{2^2} = \frac{10}{4} = 2.5$  
+For $p=3$, $\frac{10^{3-1}}{3^2} = \frac{100}{9} = 11.11$  
+For $p=4$, $\frac{10^{4-1}}{4^2} = \frac{1000}{16} = 62.5$  
+For $p=5$, $\frac{10^{5-1}}{5^2} = \frac{10000}{25} = 400$  
+For $p=10$, $\frac{10^{10-1}}{10^2} = \frac{10^9}{100} = 10000000$  
+For $p=20$, $\frac{10^{20-1}}{20^2} = \frac{10^19}{400} = 2.5\times10^{16}$  
+For $p=50$, $\frac{10^{50-1}}{50^2} = \frac{10^49}{2500} = 4\times10^{45}$  
+For $p=100$, $\frac{10^{100-1}}{100^2} = \frac{10^99}{10000} = 10^{95}$  
+
+***
+**Q5. We now examine the differences between LDA and QDA.**
+**(a) If the Bayes decision boundary is linear, do we expect LDA or QDA to perform better on the training set? On the test set?**
+
+QDA on the training set because it is more flexible, and LDA on the test set because the bias-variance trade-off. QDA has more chance to overfits a training set.
+
+**(b) If the Bayes decision boundary is non-linear, do we expect LDA or QDA to perform better on the training set? On the test set?**
+ 
+QDA on both, LDA usually performs worse on non-linear assumptions.
+
+**(c) In general, as the sample size $n$ increases, do we expect the test prediction accuracy of QDA relative to LDA to improve, decline or be unchanged? Why?**
+
+Increase or unchange, since more data is unlikely to QDA overfits the training data.
+
+**(d) True or False; Even if the Bayes decision boundary for a given problem is linear, we will probably archieve a superior test error rate using QDA rather than LDA because QDA is flexible enough to model a linear decision boundary. Justify your answer.**
+
+False. QDA does not make assumptions about the decision boundary, so it is more flexible, but tit influences the bias-variance trade-off.
+
+***
+**Q6. Suppose we collect data for a group of students in a statistics class with variables $X_1$ = hours studied, $X_2$ = undergrad GPA, and $Y$ = receive an A. We fit a logistic regression and produce estimated coefficients,  $\hat\beta_0 = -6, \hat\beta_1 = 0.05, \hat\beta_2 = 1$**.
+
+**(a) Estimate the probability that a student who studies for 40h and has an undergrad GPA of 3.5 gets an A in the class.**
+
+```{r}
+p <- function(x1,x2){ z <- exp(-6 + 0.05*x1 + 1*x2); return( round(z/(1+z),2))}
+p(40,3.5)
+```
+
+**(b) How many hours would the student in part (a) need to study to have a 50% chance of getting an A in the class?**
+
+To increase the chance of A without alter the GPA, the student have to increase the number of hours, so i test a sequence of hours and see how the chances change.
+```{r}
+hours <- seq(40,60,1)
+probs <- mapply(hours, 3.5, FUN=p)
+names(probs) <- paste0(hours,"h")
+probs
+```
+To have 50% of chance, he needs to study at least 50 hours.
+
+***
+**Q7. Suppose that we wish to predict whether a given stock will issue a dividend this year ("Yes" or "No") based on $X$, last year's percent profit. We examine a large number of companies and discover that the mean value of $X$ for companies that issued a dividend was $\bar{X} = 10$, while the mean for those that didn't was $\bar{X} = 0$. In addition, the variance of $X$ for those two sets of companies was $\hat\sigma^2 = 36$. Finally, 80% of companies issued dividends. Assuming that $X$ follows a normal distribution, predict the probability that a company will issue a dividend this year given that its percentage profit was $X = 4$ last year.**
+
+Using the Bayes theorem:
+```{r}
+pdf_k <- function(x, mu_k, sigma){(sqrt(2*pi)*sigma)^-1*exp(-(2*sigma^2)^-1*(x-mu_k))}
+
+sigma <- 6 # both classes
+
+# class 1, companies that issued a dividend
+pi_1 <- .8
+mu_1 <- 10
+
+# class2, companies that didn't issue a dividend
+pi_2 <- .2
+mu_2 <- 0
+
+# computing probabilities
+x <- 4
+p_1 <- (pi_1*pdf_k(4,mu_1,sigma))/(pi_1*pdf_k(4,mu_1,sigma) + pi_2*pdf_k(4,mu_2,sigma))
+p_2 <- (pi_2*pdf_k(4,mu_2,sigma))/(pi_1*pdf_k(4,mu_1,sigma) + pi_2*pdf_k(4,mu_2,sigma))
+
+# rounding the numbers
+p_1 <- round(p_1,2)
+p_2 <- round(p_2,2)
+
+# plot
+cbind(c("Dividend", "Non-Dividend"), c(p_1, p_2))
+```
+
+***
+**Q8. Suppose that we take a data set, divide it into equally-sized training and test sets, and the try out two different classification procedures. First we use logistic regression and get an error rate of 20% on the training data and 30% on the test data. Next we use 1-nearest neighbors (i.e. $K = 1$) and get an average error rate (averaged over both test and training data sets) of 18%. Based on these results, which method should we prefer to use for classification of new observations? Why?**
+
+The logistic regression. When K=1 for KNN approach, the training error is zero, therefore the test error for KNN was 36%. It was higher than logistic test error.
+
+***
+**Q9. This problem has to do with odds.**
+  
+**(a) On average, what fraction of people with an odds of 0.37 of defaulting on their credit card payment will in fact default?**
+```{r}
+print( 0.37/(1+0.37))
+```
+
+**(b) Suppose that an individual has a 16% chance of defaulting on her credit card payment. What are the odds that she will default?**
+```{r}
+odds <- .16/(1-.16)
+odds
+```
+
+
+
+
+
+
+
+
+
