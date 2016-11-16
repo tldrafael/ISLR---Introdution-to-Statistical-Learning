@@ -15,3 +15,10 @@
  * [Conceptual Exercises](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/chapter-3-linear-regression/conceptual-exercises.html)
 
 <br>   
+
+#### **Chapter 4 - Classification**
+
+ * [Applied Exercises](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/chapter-4-classification/applied-exercises.html)
+ * [Conceptual Exercises](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/chapter-4-classification/conceptual-exercises.html)
+
+<br>   
