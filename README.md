@@ -1,11 +1,12 @@
-# ISLR---Introdution-to-Statistical-Learning
+# ISLR - Introdution to Statistical Learning
 
-This repository intends to publish notes and answers from my studies of the *ILSR* book and to help who else are studying it.  
+This repo publishs notes and answers from my studies of **ILSR** book and also tries to help who more is been studying it.  
 
-To access the index of the exercises done so far, in rendered html, please click [here](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/index.html). If you prefer in *pdf*, access my rpubs [repo](http://rpubs.com/toleafar).  
+To access the exercises done so far, click [here](https://tldrafael.github.io/ISLR---Introdution-to-Statistical-Learning/index.html). To view them by pdf format, check on my [rpubs](http://rpubs.com/toleafar) profile.  
 
-My annotations and answers correspond my conceptual understanding and my researchs to accomplish them, they're not necessary the correct answers, please feel free to comment and correct me if needed, thanks.  
+My annotations and answers just correspond my efforts to understand and my researchs to solve them, sometimes they cannot be correct, please feel free to comment and correct me, thanks.  
 
-Information about the book can be accessed [here](http://www-bcf.usc.edu/~gareth/ISL/), the book is also available for download. Thanks to the authors *Gareth James*, *Daniela Witten*, *Trevor Hastie* and *Robert Tibshirani*.
+More information of the book can be accessed [here](http://www-bcf.usc.edu/~gareth/ISL/), the book is available for download. I'd like to thank the authors *Gareth James*, *Daniela Witten*, *Trevor Hastie* and *Robert Tibshirani*.  
 
-<IMG src='http://www-bcf.usc.edu/~gareth/ISL/ISL Cover 2.jpg', height=20%, width=20%> 
+<img src="./pics/ISL-Cover-2.jpg" width="180" height="250" />
+
